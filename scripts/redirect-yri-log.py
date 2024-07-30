@@ -2,8 +2,9 @@ import subprocess
 import os
 import datetime 
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
+
 
 def pretty_output():
     if 'YARP_COLORED_OUTPUT' in os.environ:
@@ -12,7 +13,7 @@ def pretty_output():
 
 def log(pathToConfig: Path, pathToLogFile: Path):
     pretty_output()
-    my_cmd = ['yarprobotinterface', '--config', pathToConfig, '--dryrun']
+    my_cmd = ['yarprobotinterface', '--config', pathToConfig]
     prog = subprocess.Popen(my_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     oFile = pathToLogFile / ("yri_output_" + datetime.datetime.now().strftime("%d-%m-%Y_%H-%M-%S") + ".log")
     with open(oFile, 'w') as log_file:
@@ -27,10 +28,12 @@ def log(pathToConfig: Path, pathToLogFile: Path):
                     print(realtime_output.strip(), flush=True)
         except KeyboardInterrupt:
             print("KeyboardInterrupt received, terminating the process...")
+            
             prog.terminate()
             prog.wait()
-            print("Process terminated")
-            sys.exit(0)
+            if prog.returncode is not None:
+                print("Process terminated with return code %d." %(prog.returncode))
+                sys.exit(0)
 
 def main():
     print(f"Saving log...")
@@ -58,6 +61,7 @@ def main():
     except KeyboardInterrupt:
         print("KeyboardInterrupt received, terminating the process...")
         sys.exit(0)
+    
 
 if __name__ == "__main__":
     main()

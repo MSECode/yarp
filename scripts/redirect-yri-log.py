@@ -14,7 +14,7 @@ def pretty_output():
 def log(pathToConfig: Path, pathToLogFile: Path):
     pretty_output()
     my_cmd = ['yarprobotinterface', '--config', pathToConfig]
-    prog = subprocess.Popen(my_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    prog = subprocess.Popen(my_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
     oFile = pathToLogFile / ("yri_output_" + datetime.datetime.now().strftime("%d-%m-%Y_%H-%M-%S") + ".log")
     with open(oFile, 'w') as log_file:
         try:
